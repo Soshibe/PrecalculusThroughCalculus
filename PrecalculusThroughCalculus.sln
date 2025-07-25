@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Precalculus", "Precalculus"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Calculus 1", "Calculus 1", "{93298F28-A564-4C23-AC95-4143AD3A261E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calc1 1 Limits Intro", "..\Calc1 1 Limits Intro\Calc1 1 Limits Intro.vcxproj", "{918574B1-AB6F-43EA-A04B-96F61311F8D6}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Precalculus 1", "Precalculus 1\Precalculus 1.vcxproj", "{286EA301-6676-42DD-A780-3B51FC2AA979}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Precalculus 2", "Precalculus 2\Precalculus 2.vcxproj", "{FE929394-718F-402C-A82D-8E55C2B3A092}"
@@ -31,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Precalculus 10", "Precalcul
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Precalculus 11", "Precalculus 11\Precalculus 11.vcxproj", "{2A174AE4-3FB0-461B-BB38-653835524A7E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calculus 1 Introduction to Limits", "Calculus 1 Introduction to Limits\Calculus 1 Introduction to Limits.vcxproj", "{D12167E8-B251-4989-AF21-3F77F265A36C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,14 +39,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Debug|x64.ActiveCfg = Debug|x64
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Debug|x64.Build.0 = Debug|x64
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Debug|x86.ActiveCfg = Debug|Win32
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Debug|x86.Build.0 = Debug|Win32
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Release|x64.ActiveCfg = Release|x64
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Release|x64.Build.0 = Release|x64
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Release|x86.ActiveCfg = Release|Win32
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6}.Release|x86.Build.0 = Release|Win32
 		{286EA301-6676-42DD-A780-3B51FC2AA979}.Debug|x64.ActiveCfg = Debug|x64
 		{286EA301-6676-42DD-A780-3B51FC2AA979}.Debug|x64.Build.0 = Debug|x64
 		{286EA301-6676-42DD-A780-3B51FC2AA979}.Debug|x86.ActiveCfg = Debug|Win32
@@ -135,12 +127,19 @@ Global
 		{2A174AE4-3FB0-461B-BB38-653835524A7E}.Release|x64.Build.0 = Release|x64
 		{2A174AE4-3FB0-461B-BB38-653835524A7E}.Release|x86.ActiveCfg = Release|Win32
 		{2A174AE4-3FB0-461B-BB38-653835524A7E}.Release|x86.Build.0 = Release|Win32
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Debug|x64.ActiveCfg = Debug|x64
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Debug|x64.Build.0 = Debug|x64
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Debug|x86.ActiveCfg = Debug|Win32
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Debug|x86.Build.0 = Debug|Win32
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Release|x64.ActiveCfg = Release|x64
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Release|x64.Build.0 = Release|x64
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Release|x86.ActiveCfg = Release|Win32
+		{D12167E8-B251-4989-AF21-3F77F265A36C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{918574B1-AB6F-43EA-A04B-96F61311F8D6} = {93298F28-A564-4C23-AC95-4143AD3A261E}
 		{286EA301-6676-42DD-A780-3B51FC2AA979} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{FE929394-718F-402C-A82D-8E55C2B3A092} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{57E6FD7A-B565-4DFE-A71D-F076DD7E539E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
@@ -152,6 +151,7 @@ Global
 		{6236AB00-C8DF-4839-9531-754B791BCFD7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{889DCBE4-6A8A-494B-87FF-2565649F63DB} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{2A174AE4-3FB0-461B-BB38-653835524A7E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D12167E8-B251-4989-AF21-3F77F265A36C} = {93298F28-A564-4C23-AC95-4143AD3A261E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A5E7AF3A-A9AB-4553-8328-EB91BCCB2E05}
