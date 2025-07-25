@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6236ab00-c8df-4839-9531-754b791bcfd7}</ProjectGuid>
-    <RootNamespace>Precalculus9</RootNamespace>
+    <ProjectGuid>{c2749aca-679b-40c0-93bb-0fbdaa1f6e35}</ProjectGuid>
+    <RootNamespace>Precalculus8</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,8 +124,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="vectors_parametric.ixx" />
-    <ClCompile Include="Precalculus 9.cpp" />
+    <ClCompile Include="Precalculus 8.cpp" />
+    <ClCompile Include="sequences_probability.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

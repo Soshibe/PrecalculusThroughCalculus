@@ -15,10 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Precalculus 9.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vectors_parametric.ixx">
+    <ClCompile Include="Precalculus 4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

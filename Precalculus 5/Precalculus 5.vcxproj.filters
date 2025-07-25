@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Precalculus 9.cpp">
+    <ClCompile Include="Precalculus 5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vectors_parametric.ixx">
+    <ClCompile Include="trig_equations.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

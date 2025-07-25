@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6236ab00-c8df-4839-9531-754b791bcfd7}</ProjectGuid>
-    <RootNamespace>Precalculus9</RootNamespace>
+    <ProjectGuid>{286ea301-6676-42dd-a780-3b51fc2aa979}</ProjectGuid>
+    <RootNamespace>Precalculus1</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,8 +124,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="vectors_parametric.ixx" />
-    <ClCompile Include="Precalculus 9.cpp" />
+    <ClCompile Include="Precalculus 1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
