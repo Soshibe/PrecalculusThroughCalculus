@@ -1,4 +1,10 @@
 ﻿import calculus_function_mapper;
+/*
+       Chapter 1.2: Graphically classifying functions
+        as either Continuous
+        or as their type of Discontinuity
+        based on their graphical representation
+*/
 
 #include <iostream>
 #include <string>
@@ -12,6 +18,7 @@ std::string to_string(x_ContinuityType type) {
     case x_ContinuityType::JumpDiscontinuity: return "Jump Discontinuity";
     case x_ContinuityType::InfiniteDiscontinuity: return "Infinite Discontinuity";
     case x_ContinuityType::RemovableDiscontinuity: return "Removable Discontinuity";
+	case x_ContinuityType::OscillatingDiscontinuity: return "Oscillating Discontinuity";
     default: return "Unknown";
     }
 }
@@ -45,6 +52,7 @@ int main() {
     // f8: sin(1/x) / x, infinite at x = 0
     auto f8 = [](double x) { return x == 0.0 ? 0.0 : std::sin(1.0 / x) / x; };
 
+    auto f9 = [](double x) { return sin(x * 50.0); };
 
     std::map<std::string, std::function<double(double)>> functions = {
         { "f2 (step function)", f2 },
@@ -53,7 +61,8 @@ int main() {
         { "f5 (x^3)", f5 },
         { "f6 (sin(1/x))", f6 },
         { "f7 (x * sin(1/x))", f7 },
-		{ "f8 (sin(1/x) / x)", f8 }
+		{ "f8 (sin(1/x) / x)", f8 },
+        { "f9 (sin(x * 50.0))", f9 }
     };
 
     for (const auto& [name, func] : functions) {

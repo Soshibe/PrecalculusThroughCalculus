@@ -21,5 +21,8 @@
     <ClCompile Include="function_mapper.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="detect_fractal.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,4 +1,3 @@
-
 #include <functional>
 #include <vector>
 #include <map>
@@ -13,6 +12,7 @@
 #include <concepts>
 #include <type_traits>
 #include <iomanip>
+import <numeric>;
 export module calculus_function_mapper;
 
 export enum class x_ContinuityType {
@@ -21,8 +21,122 @@ export enum class x_ContinuityType {
     JumpDiscontinuity,
     InfiniteDiscontinuity,
     RemovableDiscontinuity,
+    OscillatingDiscontinuity, // <-- NEW
     Unknown
 };
+
+template<typename Func, typename T_Domain, typename T_Output>
+class FunctionMapper;
+
+export enum class x_FractalScore {
+    NotFractal,
+    PossiblyFractal,
+    LikelyFractal
+};
+
+// Helper to calculate the slope of linear regression
+double calculate_slope(const std::vector<double>& x_values, const std::vector<double>& y_values) {
+    if (x_values.size() < 2 || x_values.size() != y_values.size()) {
+        return 0.0;
+    }
+
+    double sum_x = std::accumulate(x_values.begin(), x_values.end(), 0.0);
+    double sum_y = std::accumulate(y_values.begin(), y_values.end(), 0.0);
+    double sum_xy = std::inner_product(x_values.begin(), x_values.end(), y_values.begin(), 0.0);
+    double sum_x2 = std::inner_product(x_values.begin(), x_values.end(), x_values.begin(), 0.0);
+
+    const int n = static_cast<int>(x_values.size());
+    double numerator = n * sum_xy - sum_x * sum_y;
+    double denominator = n * sum_x2 - sum_x * sum_x;
+
+    if (std::abs(denominator) < std::numeric_limits<double>::epsilon())
+        return 0.0;
+
+    return numerator / denominator;
+}
+
+export template<typename Func, typename T_Domain, typename T_Output>
+x_FractalScore detect_fractal_behavior(const FunctionMapper<Func, T_Domain, T_Output>& base_mapper) {
+    constexpr int levels_to_test = 5;
+    const int base_level = base_mapper.get_resolution_level();
+    const int min_level = std::max(0, base_level - levels_to_test + 1);
+
+    std::vector<FunctionMapper<Func, T_Domain, T_Output>> mappers;
+    for (int r = min_level; r <= base_level; ++r) {
+        mappers.emplace_back(
+            base_mapper.get_func(),
+            base_mapper.get_x_min(),
+            base_mapper.get_x_max(),
+            base_mapper.get_y_min(),
+            base_mapper.get_y_max(),
+            r,
+            true
+        );
+        mappers.back().map_function();
+    }
+
+    int inverse_slope_count = 0;
+    int total_comparisons = 0;
+
+    for (size_t i = 1; i < mappers.size(); ++i) {
+        const auto& low_mapper = mappers[i - 1];
+        const auto& high_mapper = mappers[i];
+
+        double low_dx = (low_mapper.get_x_max() - low_mapper.get_x_min()) / (low_mapper.get_grid_width() - 1);
+        double high_dx = (high_mapper.get_x_max() - high_mapper.get_x_min()) / (high_mapper.get_grid_width() - 1);
+
+        const auto& low_grid = low_mapper.get_mapped_grid();
+        const auto& high_grid = high_mapper.get_mapped_grid();
+
+        for (int low_idx = 0; low_idx < low_mapper.get_grid_width() - 1; ++low_idx) {
+            auto low_a = low_grid.find(low_idx);
+            auto low_b = low_grid.find(low_idx + 1);
+            if (low_a == low_grid.end() || low_b == low_grid.end()) continue;
+            if (!low_a->second.has_value() || !low_b->second.has_value()) continue;
+
+            int m_low = (low_b->second.value() > low_a->second.value()) ? 1 :
+                (low_b->second.value() < low_a->second.value()) ? -1 : 0;
+
+            if (m_low == 0) continue;
+
+            double domain_start = low_mapper.get_x_min() + low_idx * low_dx;
+            double domain_end = domain_start + low_dx;
+
+            bool has_inverse = false;
+
+            for (int h_idx = 0; h_idx < high_mapper.get_grid_width() - 1; ++h_idx) {
+                double x_h_j = high_mapper.get_x_min() + h_idx * high_dx;
+                double x_h_j1 = x_h_j + high_dx;
+
+                if (x_h_j < domain_start || x_h_j1 > domain_end) continue;
+
+                auto h_val_j_it = high_grid.find(h_idx);
+                auto h_val_j1_it = high_grid.find(h_idx + 1);
+                if (h_val_j_it == high_grid.end() || h_val_j1_it == high_grid.end()) continue;
+                if (!h_val_j_it->second.has_value() || !h_val_j1_it->second.has_value()) continue;
+
+                int high_slope = (h_val_j1_it->second.value() > h_val_j_it->second.value()) ? 1 :
+                    (h_val_j1_it->second.value() < h_val_j_it->second.value()) ? -1 : 0;
+
+                if (high_slope == -m_low) {
+                    has_inverse = true;
+                    break;  // Exit early on detecting any inverse slope in this low interval
+                }
+            }
+
+            if (has_inverse) {
+                inverse_slope_count++;
+            }
+            total_comparisons++;
+        }
+    }
+
+    if (inverse_slope_count > 0) {
+        return x_FractalScore::LikelyFractal;
+    }
+
+    return x_FractalScore::NotFractal;
+}
 
 export template <typename F>
 class FunctionPredictor {
@@ -73,6 +187,16 @@ public:
     void map_function();
     x_ContinuityType check_continuity() const;
     const std::map<int, std::optional<int>>& get_mapped_grid() const { return mapped_grid_; }
+
+    // Accessors added for const correctness
+    Func get_func() const { return func_; }
+    T_Domain get_x_min() const { return x_min_; }
+    T_Domain get_x_max() const { return x_max_; }
+    T_Domain get_y_min() const { return y_min_; }
+    T_Domain get_y_max() const { return y_max_; }
+    int get_resolution_level() const { return resolution_level_; }
+    int get_grid_width() const { return grid_width_; }
+    int get_grid_height() const { return grid_height_; }
 
 private:
     Func func_;
@@ -176,6 +300,14 @@ x_ContinuityType FunctionMapper<Func, T_Domain, T_Output>::check_continuity() co
         return x_ContinuityType::Unknown;
     }
 
+    // 1) First, detect fractal/oscillating behavior:
+    auto fractal_score = detect_fractal_behavior(*this);
+    if (fractal_score == x_FractalScore::LikelyFractal) {
+        print_message("--- Oscillating behavior detected, classifying as OscillatingDiscontinuity ---");
+        return x_ContinuityType::OscillatingDiscontinuity; // Override any jump/infinite detection
+    }
+
+    // 2) Proceed with usual discontinuity detection:
     x_ContinuityType result = x_ContinuityType::Continuous;
     bool jump = false, inf = false, removable = false;
 
@@ -231,7 +363,7 @@ x_ContinuityType FunctionMapper<Func, T_Domain, T_Output>::check_continuity() co
         }
     }
 
-    // Multi-resolution validation
+    // 3) Confirm jump/infinite discontinuities across lower resolutions:
     if (jump || inf) {
         print_message("--- Discontinuity detected, verifying with lower resolutions ---");
         bool confirmed = true;
@@ -253,9 +385,13 @@ x_ContinuityType FunctionMapper<Func, T_Domain, T_Output>::check_continuity() co
         }
         else {
             print_message("--- Not confirmed across all resolutions. Reclassifying...");
+
+            // At this point, no oscillating fractal behavior detected earlier,
+            // so fallback to removable or continuous:
             return removable ? x_ContinuityType::RemovableDiscontinuity : x_ContinuityType::Continuous;
         }
     }
 
+    // 4) If no jump/infinite discontinuity, return current best classification:
     return result;
 }
