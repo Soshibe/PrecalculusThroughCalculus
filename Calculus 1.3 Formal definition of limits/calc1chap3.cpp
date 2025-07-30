@@ -152,7 +152,21 @@ int main() {
     );
     cout << "Test 10: f(x)=log_2(x) at x=1\n";
     cout << "Result: " << to_string(limit_log2_1.result()) << "\n" << limit_log2_1.proof_report() << "\n";
-
+    // Test for f(x)=x*sin(x) as x->+infinity, checking for finite limit L=0 (expect fail)
+    auto f_x_sinx = [](Real x) -> optional<Real> {
+        return x * sin(x);
+        };
+    EDL limit_x_sinx_inf(
+        numeric_limits<Real>::infinity(),
+        0.0, // Candidate limit
+        f_x_sinx,
+        1.0, // domain_min (start testing at x=1)
+        nullopt,
+        { 1.0, 0.1, 0.01 }, // Sampled epsilons
+        { 10, 100, 1000, 10000 } // Sampled M values
+    );
+    cout << "Test: f(x)=x*sin(x) as x->+inf with L=0 (expect fail)\n";
+    cout << "Result: " << to_string(limit_x_sinx_inf.result()) << "\n" << limit_x_sinx_inf.proof_report() << "\n";
     cin.get();
     return 0;
 }
