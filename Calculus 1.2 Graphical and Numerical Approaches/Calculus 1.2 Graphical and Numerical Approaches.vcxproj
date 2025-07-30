@@ -125,7 +125,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="calc1chap2.cpp" />
-    <ClCompile Include="detect_fractal.ixx" />
     <ClCompile Include="function_mapper.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

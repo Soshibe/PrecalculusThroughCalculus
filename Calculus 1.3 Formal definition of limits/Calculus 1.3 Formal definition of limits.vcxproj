@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{d12167e8-b251-4989-af21-3f77f265a36c}</ProjectGuid>
-    <RootNamespace>Calculus1IntroductiontoLimits</RootNamespace>
+    <ProjectGuid>{ef90c9a7-617d-4399-9d2f-0f9fcde4cd43}</ProjectGuid>
+    <RootNamespace>Calculus13Formaldefinitionoflimits</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Calculus 1.1 Introduction to Limits</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -125,8 +124,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="calc1introtolimits.cpp" />
-    <ClCompile Include="limits_intro.ixx" />
+    <ClCompile Include="calc1chap3.cpp" />
+    <ClCompile Include="formal_definition_limits.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

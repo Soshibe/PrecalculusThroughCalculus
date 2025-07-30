@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="calc1chap2.cpp">
+    <ClCompile Include="formal_definition_limits.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="function_mapper.ixx">
+    <ClCompile Include="calc1chap3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

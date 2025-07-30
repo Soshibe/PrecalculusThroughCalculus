@@ -18,7 +18,7 @@ std::string to_string(x_ContinuityType type) {
     case x_ContinuityType::JumpDiscontinuity: return "Jump Discontinuity";
     case x_ContinuityType::InfiniteDiscontinuity: return "Infinite Discontinuity";
     case x_ContinuityType::RemovableDiscontinuity: return "Removable Discontinuity";
-	case x_ContinuityType::OscillatingDiscontinuity: return "Oscillating Discontinuity";
+    case x_ContinuityType::OscillatingDiscontinuity: return "Oscillating Discontinuity";
     default: return "Unknown";
     }
 }
@@ -42,7 +42,7 @@ int main() {
 
     // f5: x^3 — continuous, steep slope near origin
     auto f5 = [](double x) { return x * x * x; };
-    
+
     // f6: sin(1/x), oscillatory at x = 0
     auto f6 = [](double x) { return x == 0.0 ? 0.0 : std::sin(1.0 / x); };
 
@@ -61,7 +61,7 @@ int main() {
         { "f5 (x^3)", f5 },
         { "f6 (sin(1/x))", f6 },
         { "f7 (x * sin(1/x))", f7 },
-		{ "f8 (sin(1/x) / x)", f8 },
+        { "f8 (sin(1/x) / x)", f8 },
         { "f9 (sin(x * 50.0))", f9 }
     };
 
