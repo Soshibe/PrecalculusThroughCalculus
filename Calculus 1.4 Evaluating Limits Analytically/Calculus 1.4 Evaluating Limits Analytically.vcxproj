@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="evaluating_limits_analytically.cpp" />
     <ClCompile Include="limit_analytic.ixx" />
+    <ClCompile Include="polynomial analysis.ixx" />
     <ClCompile Include="symbolic function differentiation.ixx" />
     <ClCompile Include="symbolic function parser.ixx" />
   </ItemGroup>

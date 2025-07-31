@@ -27,5 +27,8 @@
     <ClCompile Include="limit_analytic.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="polynomial analysis.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

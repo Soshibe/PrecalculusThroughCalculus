@@ -1,174 +1,126 @@
-// main.cpp
-import symbolic_function_parser;
-import symbolic_function_differentiation;
-import limit_analytic;
+import symbolic_function_parser;  // your parser module
+import limit_analytic;            // your analytic limits module
 
 #include <iostream>
-import <string>;
-import <vector>;
-import <memory>; // For NodePtr
-import <optional>;
+#include <string>
+#include <optional>
+#include <stdexcept> // For catching exceptions
+#include <cmath>     // For std::isinf, std::isnan
 
-// Function to print the symbolic tree (useful for debugging)
-std::string print_node(NodePtr node) {
-    if (!node) return "nullptr";
+// Assuming NodePtr and FuncType are accessible via 'import symbolic_function_parser;'
+// (which implicitly brings in NodePtr, FuncType, make_const, funcTypeToString etc., if exported)
 
-    std::string result = "";
+// to_string function - UPDATED to use funcTypeToString for clearer output
+std::string to_string(NodePtr node) {
+    if (!node) return "null";
     switch (node->type) {
-    case FuncType::Constant:
-        result += std::to_string(node->value);
-        break;
-    case FuncType::Variable:
-        result += node->name;
-        break;
+    case FuncType::Constant: return std::to_string(node->value);
+    case FuncType::Variable: return node->name;
+    case FuncType::Neg: return "-" + to_string(node->children[0]);
     case FuncType::Add:
     case FuncType::Sub:
     case FuncType::Mul:
     case FuncType::Div:
     case FuncType::Pow:
-        result += "(" + print_node(node->children[0]) + node->name + print_node(node->children[1]) + ")";
-        break;
-    case FuncType::Neg:
-        result += "(-" + print_node(node->children[0]) + ")";
-        break;
-    case FuncType::Sin: case FuncType::Cos: case FuncType::Tan:
-    case FuncType::Ln: case FuncType::Log: case FuncType::Abs:
+        // For binary operations, use the funcTypeToString for the operator symbol
+        return "(" + to_string(node->children[0]) + " " + limit_analytic::funcTypeToString(node->type) + " " + to_string(node->children[1]) + ")";
+    case FuncType::Sin:
+    case FuncType::Cos:
+    case FuncType::Tan:
+    case FuncType::Log:
+    case FuncType::Ln:
+    case FuncType::Abs:
     case FuncType::Exp:
-        result += node->name + "(" + print_node(node->children[0]) + ")";
-        break;
-    case FuncType::AddSubFunc:
-        result += "addsub(" + print_node(node->children[0]) + ")";
-        break;
-    case FuncType::SubAddFunc:
-        result += "subadd(" + print_node(node->children[0]) + ")";
-        break;
-    case FuncType::UnknownFunc:
-        result += "UNKNOWN(" + node->name + ")";
+    case FuncType::AddSubFunc: // Assuming these are unary functions
+    case FuncType::SubAddFunc: // Assuming these are unary functions
         if (!node->children.empty()) {
-            result += "(";
-            for (size_t i = 0; i < node->children.size(); ++i) {
-                result += print_node(node->children[i]);
-                if (i < node->children.size() - 1) result += ",";
-            }
-            result += ")";
+            return limit_analytic::funcTypeToString(node->type) + "(" + to_string(node->children[0]) + ")";
         }
-        break;
+        return limit_analytic::funcTypeToString(node->type) + "()"; // Fallback for no args
+    default: return "UNKNOWN_NODE_TYPE"; // Should not happen with exhaustive enum
     }
-    return result;
 }
 
+
 int main() {
-    std::cout << "Symbolic Expression Calculator Example" << std::endl;
-    std::cout << "--------------------------------------" << std::endl;
+    std::cout << "Calculus 1.4 Limit Evaluator\n";
 
-    // --- Example 1: Basic Parsing and Simplification ---
-    std::string expr1_str = "2*x + 3*x - 5";
-    std::cout << "\nExpression 1: " << expr1_str << std::endl;
-    try {
-        NodePtr expr1_parsed = parse_function_string(expr1_str);
-        std::cout << "Parsed (raw): " << print_node(expr1_parsed) << std::endl;
-        NodePtr expr1_simplified = simplify(expr1_parsed);
-        std::cout << "Simplified: " << print_node(expr1_simplified) << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+    struct TestCase {
+        std::string expr;
+        std::string var;
+        std::string limit_point_str; // String representation of the limit point
+    };
 
-    // --- Example 2: Derivative ---
-    std::string expr2_str = "sin(x^2) + 3*x";
-    std::string var2 = "x";
-    std::cout << "\nExpression 2: " << expr2_str << std::endl;
-    std::cout << "Differentiate with respect to: " << var2 << std::endl;
-    try {
-        NodePtr expr2_parsed = parse_function_string(expr2_str);
-        NodePtr d_expr2 = derivative(expr2_parsed, var2);
-        std::cout << "Derivative (raw): " << print_node(d_expr2) << std::endl;
-        NodePtr d_expr2_simplified =  simplify(d_expr2);
-        std::cout << "Derivative (simplified): " << print_node(d_expr2_simplified) << std::endl;
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+    TestCase tests[] = {
+        { "x^2 + 3*x + 2", "x", "2" },               // Direct substitution: 4 + 6 + 2 = 12
+        { "(x^2 - 4)/(x-2)", "x", "2" },             // L'Hopital's: (2x)/1 -> 4
+        { "sin(x)/x", "x", "0" },                    // L'Hopital's: cos(x)/1 -> 1
+        { "(1 - cos(x))/x^2", "x", "0" },           // L'Hopital's (twice): (sin(x))/(2x) -> cos(x)/2 -> 1/2
+        { "1/x", "x", "0+" },                        // One-sided limit, handled by copysign in try_substitute
+        { "1/x", "x", "0-" },                        // One-sided limit, handled by copysign in try_substitute
+        { "x", "x", "inf" },                         // +inf
+        { "1/x", "x", "inf" },                       // 0
+        { "x^2", "x", "-inf" },                      // +inf
+        { "(exp(x) - 1)/x", "x", "0" },              // L'Hopital's: exp(x)/1 -> 1
+        { "(ln(x))/(x-1)", "x", "1" },               // L'Hopital's: (1/x)/1 -> 1
+        { "(x^3 - 8)/(x-2)", "x", "2" },             // L'Hopital's: (3x^2)/1 -> 12
+        { "x/(x+1)", "x", "inf" },                   // Leading terms: x/x -> 1
+        { "exp(x)/x^2", "x", "inf" },                // L'Hopital's (twice): exp(x)/(2x) -> exp(x)/2 -> inf
+        { "ln(x)/x", "x", "inf" },                   // L'Hopital's: (1/x)/1 -> 0
+        { "(x^2 + 2*x + 1)/(x^2 - 3*x + 2)", "x", "inf" } // Ratio of leading coeffs: 1
+    };
 
-    // --- Example 3: Limit using L'Hôpital's Rule (0/0 form) ---
-    // Limit as x->0 of sin(x)/x
-    std::string expr3_str = "sin(x)/x";
-    std::string var3 = "x";
-    double val3 = 0.0;
-    std::cout << "\nLimit Example 1: limit as " << var3 << "->" << val3 << " of " << expr3_str << std::endl;
-    try {
-        NodePtr expr3_parsed =  parse_function_string(expr3_str);
-        std::optional<NodePtr> limit3_result = analytic_limit(expr3_parsed, var3, val3);
-        if (limit3_result.has_value()) {
-            std::cout << "Limit result: " << print_node(limit3_result.value()) << std::endl;
-        }
-        else {
-            std::cout << "Could not evaluate limit analytically." << std::endl;
-        }
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+    for (const auto& test : tests) {
+        std::cout << "\n--- Evaluating limit of: " << test.expr
+            << " as " << test.var << " -> " << test.limit_point_str << " ---\n";
+        try {
+            // Parse the expression string into a NodePtr
+            NodePtr root = parse_function_string(test.expr);
+            if (!root) {
+                std::cout << "Parse error for expression: " << test.expr << "\n";
+                continue;
+            }
 
-    // --- Example 4: Limit with direct substitution ---
-    // Limit as x->2 of x^2 + 1
-    std::string expr4_str = "x^2 + 1";
-    std::string var4 = "x";
-    double val4 = 2.0;
-    std::cout << "\nLimit Example 2: limit as " << var4 << "->" << val4 << " of " << expr4_str << std::endl;
-    try {
-        NodePtr expr4_parsed =  parse_function_string(expr4_str);
-        std::optional<NodePtr> limit4_result = analytic_limit(expr4_parsed, var4, val4);
-        if (limit4_result.has_value()) {
-            std::cout << "Limit result: " << print_node(limit4_result.value()) << std::endl;
-        }
-        else {
-            std::cout << "Could not evaluate limit analytically." << std::endl;
-        }
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+            // Call the analytic_limit function (using the overload that takes string for limit point)
+            // This overload internally calls limit_analytic::parse_limit_point_string
+            auto limit_opt = limit_analytic::analytic_limit(root, test.var, limit_analytic::parse_limit_point_string(test.limit_point_str));
+            
 
-    // --- Example 5: Limit with AddSubFunc (should simplify to 0 if argument is 0) ---
-    // Limit as x->0 of addsub(x)
-    std::string expr5_str = "addsub(x)";
-    std::string var5 = "x";
-    double val5 = 0.0;
-    std::cout << "\nLimit Example 3: limit as " << var5 << "->" << val5 << " of " << expr5_str << std::endl;
-    try {
-        NodePtr expr5_parsed =  parse_function_string(expr5_str);
-        std::optional<NodePtr> limit5_result =  analytic_limit(expr5_parsed, var5, val5);
-        if (limit5_result.has_value()) {
-            std::cout << "Limit result: " << print_node(limit5_result.value()) << std::endl;
+            if (limit_opt) {
+                auto limit_node = *limit_opt;
+                if (limit_node->type == FuncType::Constant) {
+                    // Check for infinity values
+                    if (std::isinf(limit_node->value)) {
+                        if (limit_node->value > 0) {
+                            std::cout << "Limit = +Infinity\n";
+                        }
+                        else {
+                            std::cout << "Limit = -Infinity\n";
+                        }
+                    }
+                    else if (std::isnan(limit_node->value)) {
+                        std::cout << "Limit = Undefined (NaN)\n";
+                    }
+                    else {
+                        std::cout << "Limit = " << limit_node->value << "\n";
+                    }
+                }
+                else {
+                    // This case indicates that the limit function returned a symbolic expression
+                    // that is not a constant, meaning it couldn't fully resolve to a number or infinity.
+                    std::cout << "Limit evaluated to a symbolic expression (not a constant): " << to_string(limit_node) << "\n";
+                }
+            }
+            else {
+                std::cout << "Limit could not be determined analytically (returned nullopt).\n";
+            }
         }
-        else {
-            std::cout << "Could not evaluate limit analytically." << std::endl;
+        catch (const std::exception& ex) {
+            std::cout << "Exception: " << ex.what() << "\n";
         }
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cout << "----------------------\n";
     }
 
-    // --- Example 6: Limit that might lead to a non-numerical result or error (e.g., variable in limit result) ---
-    // Limit as x->0 of x+y
-    std::string expr6_str = "(5/x)^2+3+5x";
-    std::string var6 = "x";
-    double val6 = 0.0;
-    std::cout << "\nLimit Example 4: limit as " << var6 << "->" << val6 << " of " << expr6_str << std::endl;
-    try {
-        NodePtr expr6_parsed =  parse_function_string(expr6_str);
-        std::optional<NodePtr> limit6_result =  analytic_limit(expr6_parsed, var6, val6);
-        if (limit6_result.has_value()) {
-            std::cout << "Limit result: " << print_node(limit6_result.value()) << std::endl;
-        }
-        else {
-            std::cout << "Could not evaluate limit analytically (expected for symbolic result)." << std::endl;
-        }
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
     std::cin.get();
     return 0;
 }
